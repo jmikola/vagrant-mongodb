@@ -1,4 +1,5 @@
 class mongodb {
+
     package { "python-software-properties":
         ensure => installed,
     }
@@ -28,11 +29,21 @@ class mongodb {
         require => Exec["update-apt"],
     }
 
-    service { "mongodb":
-        enable => true,
-        ensure => running,
-        require => File['/etc/mongodb.key'],
+    file { "/data":
+        ensure => directory,
+        mode   => 777,
+    }
+
+    file { "/data/db":
+        ensure => directory,
+        mode   => 777,
+        require => File["/data"],
+    }
+
+    file {'/data/logs':
+        ensure => directory,
+        mode   => 777,
+        require => File["/data"],
     }
 
 }
-
