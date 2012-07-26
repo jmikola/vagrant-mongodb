@@ -15,6 +15,13 @@ class mongodb {
         require => Exec["get-mongodb"],
     }
 
+    exec { "install-mongodb":
+        path => "/bin:/usr/bin",
+        cwd => "/home/vagrant",
+        command => "cp -a mongodb-linux-x86_64-2.2.0-rc0/bin/* /usr/bin",
+        require => Exec["unpack-mongodb"],
+    }
+
     file { "/data":
         ensure => directory,
         mode   => 777,
