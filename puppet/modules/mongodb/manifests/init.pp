@@ -1,32 +1,18 @@
 class mongodb {
 
-    package { "python-software-properties":
-        ensure => installed,
-    }
-
-    exec { "apt-repo-10gen":
+    exec { "get-mongodb":
         path => "/bin:/usr/bin",
-        command => "add-apt-repository 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen'",
-        unless => "cat /etc/apt/sources.list | grep 10gen | grep downloads-distro",
-        require => Package["python-software-properties"],
+        cwd => "/home/vagrant",
+        command => "wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.2.0-rc0.tgz",
+        unless => "test -f mongodb-linux-x86_64-2.2.0-rc0.tgz",
     }
 
-    exec { "apt-key-10gen":
+    exec { "unpack-mongodb":
         path => "/bin:/usr/bin",
-        command => "apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10",
-        unless => "apt-key list | grep 10gen",
-        require => Exec["apt-repo-10gen"],
-    }
-
-    exec { "update-apt":
-        path => "/bin:/usr/bin",
-        command => "apt-get update",
-        require => Exec["apt-key-10gen"],
-    }
-
-    package { "mongodb-10gen":
-        ensure => installed,
-        require => Exec["update-apt"],
+        cwd => "/home/vagrant",
+        command => "tar xzf mongodb-linux-x86_64-2.2.0-rc0.tgz",
+        unless => "test -d mongodb-linux-x86_64-2.2.0-rc0",
+        require => Exec["get-mongodb"],
     }
 
     file { "/data":
@@ -35,12 +21,6 @@ class mongodb {
     }
 
     file { "/data/db":
-        ensure => directory,
-        mode   => 777,
-        require => File["/data"],
-    }
-
-    file {'/data/logs':
         ensure => directory,
         mode   => 777,
         require => File["/data"],
