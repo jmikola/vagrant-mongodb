@@ -19,6 +19,7 @@ class MongoRsInitCommand < Vagrant::Command::Base
         raise "Must be running!" if env.primary_vm.state != :running
         primaryPort = 37017
         env.primary_vm.channel.execute("mongo --port #{primaryPort} --eval 'rs.initiate()'")
+        env.primary_vm.channel.execute("mongo --port #{primaryPort} --eval 'while (!db.isMaster().ismaster);'")
         (37018..37021).each do |p|
             env.primary_vm.channel.execute("mongo --port #{primaryPort} --eval 'rs.add(\"replicaset.local:#{p}\")'")
         end
