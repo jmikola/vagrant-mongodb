@@ -5,9 +5,8 @@ class MongoRsStartCommand < Vagrant::Command::Base
         env = Vagrant::Environment.new
         env.primary_vm.channel.sudo("ulimit -n 20000")
         (37017..37021).each do |p|
-            env.primary_vm.channel.execute("touch /data/logs/mongodb.#{p}.log")
             env.primary_vm.channel.execute("mkdir -p /data/db/#{p}")
-            env.primary_vm.channel.execute("mongod --port #{p} --replSet rs --dbpath /data/db/#{p} --nojournal --noprealloc --logappend --logpath /data/logs/mongodb.#{p}.log --fork")
+            env.primary_vm.channel.execute("mongod --port #{p} --replSet rs --dbpath /data/db/#{p} --nojournal --noprealloc --logpath /tmp/mongod.#{p}.log --fork")
         end
     end
 end
